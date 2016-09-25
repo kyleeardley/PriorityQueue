@@ -1,0 +1,35 @@
+<!--Kyle Eardley Priority Queue Project-->
+
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Priority Queue App</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+
+  <div id='queueBoxWrapper'>
+    <div id='inputSection'>
+      <form>
+        Item number:<br>
+        <input id='itemNumber' type="number" name="itemNumber"><br>
+        <!--Item Priority:<br>-->
+        <input id='itemPriority' type="text" name="itemPriority" hidden><br>
+        <input id='submitButton' type="div" value="Submit" onclick='submitClicked()'>
+      </form>
+    </div>
+    <div id='viewArea'>
+      <ul id="queueList">
+    	
+  	  </ul>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

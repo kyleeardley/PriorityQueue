@@ -60,7 +60,6 @@ function dequeue() {
 
 function queueItemClicked(eventText) {
 	var itemNumber = eventText.split('Number:')[1][1];
-	console.log(itemNumber);
 	var itemIndex = binarySearch(itemNumber, itemsArray);
 	itemsArray.splice(itemIndex, 1);
 	organizeArray();

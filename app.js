@@ -52,15 +52,17 @@ function submitClicked() {
 
 function dequeue() {
 	sortArray();
-	itemsArray.pop();
+	itemsArray.shift();
 	buildList();
 }
 
 // Remove Clicked Item Method
 
 function queueItemClicked(eventText) {
-	var arrayIndex = eventText.split('Row:')[1][1] - 1;
-	itemsArray.splice(arrayIndex, 1);
+	var itemNumber = eventText.split('Number:')[1][1];
+	console.log(itemNumber);
+	var itemIndex = binarySearch(itemNumber, itemsArray);
+	itemsArray.splice(itemIndex, 1);
 	organizeArray();
 }
 
@@ -68,28 +70,17 @@ function queueItemClicked(eventText) {
 
 function organizeArray(newItemObject) {
 	var numberArray = [];
-	var statusObjectArray = [];
-	var existsBooleanArray = [];
-	var itemProcessed = false;
 	// Check For New Item and Compare To Existing Priorities
 	if(newItemObject) {
 		for(var i=0; i<itemsArray.length; i++) {
 			numberArray.push(itemsArray[i].itemNumber);
 		}
-		if(numberArray.indexOf(newItemObject.itemNumber) > -1) {
-			var itemIndex = numberArray.indexOf(newItemObject.itemNumber);
+		if(binarySearch(newItemObject.itemNumber, numberArray) > -1) {
+			var itemIndex = binarySearch(newItemObject.itemNumber, itemsArray);
 			itemsArray[itemIndex].itemPriority += 1;
 		} else {
 			newItemObject.itemPriority = newItemObject.itemNumber;
 			itemsArray.push(newItemObject);
-		}
-	} else {
-		// If No New Object Organize New Spliced Array
-		for(var i=0; i<itemsArray.length; i++) {
-			statusObjectArray.push({
-				"number": itemsArray[i].itemNumber,
-				"priority": itemsArray[i].itemPriority
-			});
 		}
 	} 
 	sortArray();
@@ -97,6 +88,7 @@ function organizeArray(newItemObject) {
 }
 
 // Sort the Array
+
 function sortArray() {
 	itemsArray.sort(function(a, b){
 		return a.itemPriority - b.itemPriority;
@@ -104,10 +96,38 @@ function sortArray() {
 }
 
 // Index the Array
+
 function indexArray() {
 	for(var i=0; i<itemsArray.length; i++) {
 		itemsArray[i].itemIndex = i;
 	}
+}
+
+// Binary Search O(log n)
+
+function binarySearch(searchElement, array) {
+ 
+ 	var currentIndex;
+    var currentElement;
+    var minIndex = 0;
+    var maxIndex = array.length - 1;
+    
+    while (minIndex <= maxIndex) {
+        currentIndex = (minIndex + maxIndex) / 2 | 0;
+        currentElement = array[currentIndex];
+ 
+        if (currentElement < searchElement) {
+            minIndex = currentIndex + 1;
+        }
+        else if (currentElement > searchElement) {
+            maxIndex = currentIndex - 1;
+        }
+        else {
+            return currentIndex;
+        }
+    }
+ 
+    return -1;
 }
 
 // Build Output Template
@@ -119,7 +139,7 @@ function buildList() {
 	}	
 	for(var i=0; i<itemsArray.length; i++) {
 		var child = document.createElement('li');
-		child.innerHTML = "Row: " + (itemsArray[i].itemIndex + 1) +'\xa0\xa0\xa0\xa0\xa0'  +"Number: " + itemsArray[i].itemNumber + 
+		child.innerHTML = "Row: " + (i + 1) +'\xa0\xa0\xa0\xa0\xa0'  +"Number: " + itemsArray[i].itemNumber + 
 			'\xa0\xa0\xa0\xa0\xa0' + "Priority: " + itemsArray[i].itemPriority + '\xa0\xa0\xa0\xa0\xa0' + "(Click here to delete item)";
 
 		currentList.appendChild(child);

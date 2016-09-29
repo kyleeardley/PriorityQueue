@@ -21,6 +21,9 @@
 // Instantiate Global Variables
 
 var itemsArray = [];
+var firstTime = true;
+var currentIndex = 0;
+buildList();
 
 // Setup Event Listeners
 
@@ -32,14 +35,12 @@ document.querySelector('ul').addEventListener('click', function(event) {
 
 function submitClicked() {
 	var formItemNumber = parseInt(document.querySelector('input[name="itemNumber"]').value);
-	var formItemPriority = document.querySelector('input[name="itemPriority"]').value;
 	var itemObject = {
 		"itemIndex": 0,
-		"itemNumber": formItemNumber,
-		"itemPriority": formItemPriority
+		"itemNumber": formItemNumber
 		};
 	if(formItemNumber) {
-		organizeArray(itemObject);
+		insertArrayItem(itemObject);
 		//clear out the input fields
 		document.querySelector('input[name="itemNumber"]').value = '';
 		document.querySelector('input[name="itemPriority"]').value = '';
@@ -62,27 +63,42 @@ function queueItemClicked(eventText) {
 	var itemNumber = eventText.split('Number:')[1][1];
 	var itemIndex = binarySearch(itemNumber, itemsArray);
 	itemsArray.splice(itemIndex, 1);
-	organizeArray();
+	insertArrayItem();
 }
 
 // Organize Array Elements
 
-function organizeArray(newItemObject) {
+function insertArrayItem(newItemObject) {
 	var numberArray = [];
 	// Check For New Item and Compare To Existing Priorities
-	if(newItemObject) {
-		for(var i=0; i<itemsArray.length; i++) {
-			numberArray.push(itemsArray[i].itemNumber);
-		}
-		if(binarySearch(newItemObject.itemNumber, numberArray) > -1) {
-			var itemIndex = binarySearch(newItemObject.itemNumber, itemsArray);
-			itemsArray[itemIndex].itemPriority += 1;
+	
+	for(var i=0; i<itemsArray.length; i++) {
+		numberArray.push(itemsArray[i].itemNumber);
+	}
+	// if item exists already in the array then add one to priority
+	if(binarySearch(newItemObject.itemNumber, numberArray) > -1) {
+		var itemIndex = binarySearch(newItemObject.itemNumber, itemsArray);
+		itemsArray[itemIndex].itemPriority += 1;
+	// else if item doesn't exist index and insert
+	} else {
+		newItemObject.itemPriority = newItemObject.itemNumber;
+		if(itemsArray.length == 0) {
+			itemsArray[0] = newItemObject;
+		} else if(itemsArray[itemsArray.length -1].itemNumber < newItemObject.itemNumber){
+			itemsArray[itemsArray.length] = newItemObject;
+		} else if(itemsArray[itemsArray.length -1].itemNumber < newItemObject.itemNumber){
+			itemsArray[itemsArray.length] = newItemObject;
 		} else {
-			newItemObject.itemPriority = newItemObject.itemNumber;
-			itemsArray.push(newItemObject);
+			binarySearch(newItemObject.itemNumber, numberArray);
+			var arrayLength = itemsArray.length -1;
+			for(var i=arrayLength; i>=currentIndex; i--) {
+				console.log(currentIndex, arrayLength);
+				itemsArray[i+1] = itemsArray[i];
+			}
+			itemsArray[currentIndex] = newItemObject;
 		}
-	} 
-	sortArray();
+	}
+	// sortArray();
 	buildList();
 }
 
@@ -105,16 +121,13 @@ function indexArray() {
 // Binary Search O(log n)
 
 function binarySearch(searchElement, array) {
- 
- 	var currentIndex;
     var currentElement;
     var minIndex = 0;
     var maxIndex = array.length - 1;
-    
     while (minIndex <= maxIndex) {
         currentIndex = (minIndex + maxIndex) / 2 | 0;
         currentElement = array[currentIndex];
- 
+ 		console.log("currentIndex " + currentIndex, "currentElement " + currentElement);
         if (currentElement < searchElement) {
             minIndex = currentIndex + 1;
         }
@@ -135,12 +148,24 @@ function buildList() {
 	var currentList = document.querySelector('#queueList');
 	while(currentList.firstChild) {
 		currentList.removeChild(currentList.firstChild);
-	}	
-	for(var i=0; i<itemsArray.length; i++) {
-		var child = document.createElement('li');
-		child.innerHTML = "Row: " + (i + 1) +'\xa0\xa0\xa0\xa0\xa0'  +"Number: " + itemsArray[i].itemNumber + 
-			'\xa0\xa0\xa0\xa0\xa0' + "Priority: " + itemsArray[i].itemPriority + '\xa0\xa0\xa0\xa0\xa0' + "(Click here to delete item)";
+	}
+	if(firstTime) {
+ 		firstTime = false;
+ 		for(var i=0; i<5; i++) {
+			var child = document.createElement('li');
+			child.innerHTML = "Row: " + (i + 1) +'\xa0\xa0\xa0\xa0\xa0'  +"Number: " + (2 + i *2) + 
+				'\xa0\xa0\xa0\xa0\xa0' + "Priority: " + (2 + i * 2) + '\xa0\xa0\xa0\xa0\xa0' + "(Click here to delete item)";
 
-		currentList.appendChild(child);
+			currentList.appendChild(child);
+			itemsArray[i] = {"itemIndex": i, "itemNumber": (2 + i * 2)}
+		}
+	} else {	
+		for(var i=0; i<itemsArray.length; i++) {
+			var child = document.createElement('li');
+			child.innerHTML = "Row: " + (i + 1) +'\xa0\xa0\xa0\xa0\xa0'  +"Number: " + itemsArray[i].itemNumber + 
+				'\xa0\xa0\xa0\xa0\xa0' + "Priority: " + itemsArray[i].itemPriority + '\xa0\xa0\xa0\xa0\xa0' + "(Click here to delete item)";
+
+			currentList.appendChild(child);
+		}
 	}
 }

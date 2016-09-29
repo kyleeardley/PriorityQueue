@@ -86,8 +86,12 @@ function insertArrayItem(newItemObject) {
 			itemsArray[0] = newItemObject;
 		} else if(itemsArray[itemsArray.length -1].itemNumber < newItemObject.itemNumber){
 			itemsArray[itemsArray.length] = newItemObject;
-		} else if(itemsArray[itemsArray.length -1].itemNumber < newItemObject.itemNumber){
-			itemsArray[itemsArray.length] = newItemObject;
+		} else if(newItemObject.itemNumber = 5){
+			for(var i=arrayLength; i>=currentIndex; i--) {
+				console.log(currentIndex, arrayLength);
+				itemsArray[i+1] = itemsArray[i];
+			}
+			itemsArray[currentIndex +1] = newItemObject;
 		} else {
 			binarySearch(newItemObject.itemNumber, numberArray);
 			var arrayLength = itemsArray.length -1;
